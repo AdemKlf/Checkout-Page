@@ -20,7 +20,7 @@ productsDiv.addEventListener("click", (event) => {
     // console.log("minus btn is clicked!");
     if (event.target.parentElement.querySelector(".quantity").innerText > 1) {
       event.target.parentElement.querySelector(".quantity").innerText--;
-      calculateProductPrice();
+      calculateProductPrice(event.target);
       calculateCartPrice();
     } else {
       if (confirm("Product will be removed???")) {
@@ -32,13 +32,39 @@ productsDiv.addEventListener("click", (event) => {
   } else if (event.target.classList.contains("fa-plus")) {
     // console.log("plus btn is clicked!");
     event.target.previousElementSibling.innerText++;
+    calculateProductPrice(event.target);
+    calculateCartPrice();
   } else if (event.target.className == "remove-product") {
     // console.log("remove btn is clicked!");
     event.target.parentElement.parentElement.parentElement.remove();
+    calculateCartPrice();
   } else {
     // console.log("other element is clicked!");
   }
 });
 
-const calculateProductPrice = () => {};
-const calculateCartPrice = () => {};
+const calculateProductPrice = (clickedBtn) => {
+  const productInfoDiv = clickedBtn.parentElement.parentElement;
+  // console.log(productInfoDiv);
+  const price = productInfoDiv.querySelector(".product-price strong").innerText;
+  const quantity = productInfoDiv.querySelector(".quantity").innerText;
+  const productTotalDiv = productInfoDiv.querySelector(".product-line-price");
+  productTotalDiv.innerText = (price * quantity).toFixed(2);
+  alert(price);
+};
+const calculateCartPrice = () => {
+  const productTotalPricesDivs = document.querySelectorAll(
+    ".product-line-price"
+  );
+
+  let subtotal = 0;
+  productTotalPricesDivs.forEach((div) => {
+    subtotal += parseFloat(div.innerText);
+  });
+  const taxRate = subtotal * localStorage.getItem("taxRate");
+  const shippingPrice =
+    subtotal > 0 && subtotal < localStorage.getItem("shippingFreePrice")
+      ? localStorage.getItem("shippingPrice")
+      : 0;
+  console.log(shippingPrice);
+};
